@@ -34,15 +34,15 @@ def search_password():
     """
     with open('data_passwords.txt', 'r') as archive:
         lines = archive.readlines()
-        account_source = input('Enter the account source, so I can search for it.:').strip
-        find = False
+        account_source = str(input('Enter the account source, so i can search for it: ')).strip()
+        find = ''
         line()
         for c in range(3, len(lines)):
-            if account_source in lines[c]:
-                user_password = line[c].split
-                print(f"this is the user {user_password[0]} and that's the password{user_password[2]}")
-                find = True
-        if find == False:
+            user_password = lines[c].split()
+            if user_password[1] == account_source:
+                find = user_password
+                print(f"this account has the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m]")
+        if find == '':
             print("Sorry but the account which you're seaching don't exists") 
         line()
 

@@ -86,6 +86,7 @@ while True:
         if security_check(key_access, color['red']) == False:
             break
         search_password()
+        sleep(2)
     elif op == 4:
         print('Goodbye!!!')
         break
