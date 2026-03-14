@@ -51,9 +51,9 @@ except FileExistsError:
 # main program
 
 with open('data_passwords.txt', 'r') as archive:
-    list = archive.readline().split()
-    name = list[0]
-    key_access = list[1]
+    list_principal = archive.readline().split()
+    name = list_principal[0]
+    key_access = list_principal[1]
 
 while True:
     menu()

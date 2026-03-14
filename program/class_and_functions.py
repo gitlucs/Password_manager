@@ -41,7 +41,7 @@ def search_password():
             user_password = lines[c].split()
             if user_password[1] == account_source:
                 find = user_password
-                print(f"This account uses the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m]")
+                print(f"This account uses the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m")
         if find == '':
             print("\033[31mAccount not found.\033[m") 
         line()
