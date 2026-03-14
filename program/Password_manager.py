@@ -20,18 +20,19 @@ try:
     with open('data_passwords.txt', 'x') as archive:
         key_access = generate_password()
         line()
-        print('Welcome new user, Thanks for using my program')
+        print('Welcome, new user! Thanks for using my program.')
         while True:
-            name = input(f'Please, write ONLY your first name: ')
+            name = input(f'Please enter ONLY your first name: ')
             if ' ' in name:
-                name = input(f'Please, write ONLY your first name: ')
+                name = input(f'Please enter ONLY your first name: ')
             else:
                 break
         line()
-        print(f'{color['green']}{key_access}{color['none']} THIS is your new key access to register and see your accounts passwords')
-        print('Please save this password in a secure local and not forget her because if it happen you will lost the access of all passwords registers')
+        print(f'{color['green']}{key_access}{color['none']} This is your new access key to register and see your accounts passwords')
+        print("""Please save this key in a secure place and do not forget it,\n
+                because if you lose it you will lose access to all stored passwords.""")
         line()
-        print('i will wait 10 seconds to you do this:')
+        print('I will wait 10 seconds for you to do this:')
         for c in range(1, 11):
             print(c, end = ' ', flush = True)
             sleep(1)
@@ -78,8 +79,8 @@ while True:
         place = str(input('Which platform is this account from? '))
         new_user = User(username, place)
         new_user.new_login()
-        print(f'{color['green']}You have successfully registered{color['none']}')
-        print(f'And thats is your password for this account: {color['blue']}{new_user.password}{color['none']}')
+        print(f'{color['green']}Account successfully registered.{color['none']}')
+        print(f'Here is the password for this account:: {color['blue']}{new_user.password}{color['none']}')
         sleep(2)
     elif op == 3:
         line()
