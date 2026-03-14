@@ -18,14 +18,14 @@ def menu():
     print("4 - Finish program")
     line()
 
-def show_logins(self):
+def show_logins():
     """
     show all accounts created by user
     including the username, password, and account source
     """
     pass
 
-def search_password(self):
+def search_password():
     """
     search an especific password and user, with the account source
     """
