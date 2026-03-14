@@ -5,6 +5,7 @@ from class_and_functions import menu
 from class_and_functions import generate_password
 from class_and_functions import search_password
 from class_and_functions import show_logins
+from class_and_functions import security_check
 
 
 color = {'blue':'\033[1;34m',
@@ -35,16 +36,16 @@ try:
             print(c, end = ' ', flush = True)
             sleep(1)
         print('')
-        archive.write(name)
-        archive.write(' ')
-        archive.write(key_access)
+        archive.write(f' {name:<15}{key_access}\n')
+        archive.write(f'{'-' * 70}\n')
+        archive.write(f'{'Username':<30}{'Account source':^20}{'password':>20}\n')
+        
     
-except:
+except FileExistsError:
     with open('data_passwords.txt', 'r') as archive:
         line()
-        print(f'Helloo {color['blue']}{archive.readline().split()[0]}{color['none']}, Welcome again!')
+        print(f'Helloo {color['blue']}{archive.readline().split()[0]}{color['none']}, Welcome back!')
         pass
-
 
 # main program
 
@@ -60,20 +61,31 @@ while True:
         if op not in '1234':
             op = str(input(f'{color['red']}ERROR! THIS IS NOT AN OPTION{color['none']}, please choice a valid option [1,2,3,4]: '))
         else:
-            break
+            break        
     op = int(op)
     if op == 1:
-        line() 
+        line()
+        if security_check(key_access, color['red']) == False:
+            break
         show_logins()
+        sleep(3)
+
     elif op == 2:
         line() 
+        if security_check(key_access, color['red']) == False:
+            break
         username = str(input('Write the account username: ')).strip()
         place = str(input('Which platform is this account from? '))
         new_user = User(username, place)
         new_user.new_login()
         print(f'{color['green']}You have successfully registered{color['none']}')
+        print(f'And thats is your password for this account: {color['blue']}{new_user.password}{color['none']}')
+        sleep(2)
     elif op == 3:
-        line() 
+        line()
+        if security_check(key_access, color['red']) == False:
+            break
         search_password()
     elif op == 4:
+        print('Goodbye!!!')
         break
