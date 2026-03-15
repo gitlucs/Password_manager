@@ -16,7 +16,6 @@ color = {'blue':'\033[1;34m',
          'none':'\033[m'}
 
 op = 0
-
 init_cryptography()
 cryptography = Criptography()
 try:
@@ -47,22 +46,25 @@ try:
             print(c, end = ' ', flush = True)
             sleep(1)
         print('')
-        archive.write(f'{cryptography.encrypt(f'{name:<15}{key_access})')}\n')
-        archive.write(f'{cryptography.encrypt(f'{'-' * 70}')}\n')
-        archive.write(f'{cryptography.encrypt(f'{'Username':<30}{'Account source':^20}{'password':>20}')}\n')
+        archive.write(cryptography.encrypt(f"{name}") + "\n")
+        archive.write(cryptography.encrypt(f"{key_access}") + "\n")
+        archive.write(cryptography.encrypt('-' * 70) + "\n")
+        archive.write(cryptography.encrypt(f"{'Username':<30}{'Account source':^20}{'password':>20}") + "\n")
         
     
 except FileExistsError:
     with open('data_passwords.txt', 'r') as archive:
         line()
-        print(f'Helloo {color['blue']}{cryptography.decrypt(archive.archive.readlines()[0])}{color['none']}, Welcome back!')
+        name = cryptography.decrypt(archive.readlines()[0].strip())
+        print(f"Helloo {color['blue']}{name.strip()}{color['none']}, Welcome back!")
         pass
 
 # main program
 
 with open('data_passwords.txt', 'r') as archive:
-    name = cryptography.decrypt(archive.readlines()[0])
-    key_access = cryptography.decrypt(archive.readlines()[1])
+    lines = archive.readlines()
+    name = cryptography.decrypt(lines[0].strip()).strip()
+    key_access = cryptography.decrypt(lines[1].strip()).strip()
 
 while True:
     menu()

@@ -25,8 +25,8 @@ def show_logins():
     with open('data_passwords.txt', 'r') as archive:
         lines = archive.readlines()
         line()
-        for c in range(2, len(lines)):
-            print(cryptography.decrypt(lines[c]))
+        for c in range(3, len(lines)):
+            print(cryptography.decrypt(lines[c].strip()))
         line()
 
 def search_password():
@@ -39,7 +39,8 @@ def search_password():
         find = ''
         line()
         for c in range(3, len(lines)):
-            user_password = cryptography.decrypt(lines[c].split())
+            user_password = cryptography.decrypt(lines[c].strip())
+            user_password = user_password.split()
             if user_password[1] == account_source:
                 find = user_password
                 print(f"This account uses the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m")
@@ -94,7 +95,7 @@ class Criptography:
         """
         Remember the key and input on the class attribute
         """
-        with open("secret.key", "r") as key_file:
+        with open("secret.key", "rb") as key_file:
             self.key_crypto = key_file.readline().strip()
 
     def encrypt(self, data):
@@ -102,25 +103,20 @@ class Criptography:
         encrypt and write all the user's data informed
         """
         f = Fernet(self.key_crypto)
-        encrypted_info = None
-        if data == list():
+        if isinstance(data, list):
+            encrypted_info = []
             for c in data:
-                encrypted_info += f.encrypt(c.encode('utf-8'))
+                encrypted_info.append(f.encrypt(c.encode()).decode())
+            return encrypted_info
         else:
-            encrypted_info = f.encrypt(data.encode('utf-8'))
-        return encrypted_info
+            return f.encrypt(data.encode()).decode()
 
     def decrypt(self, data):
         """
         decrypt and return the selected data for the user
         """
         f = Fernet(self.key_crypto)
-        decrypted_info = None
-        if data is list():
-            for c in data:
-                decrypted_info += f.decrypt(c.encode('utf-8'))
-        else:
-            decrypted_info = f.decrypt(data.encode('utf-8'))
+        decrypted_info = f.decrypt(data.encode()).decode()
         return decrypted_info
 
 class User:
@@ -136,4 +132,5 @@ class User:
         Registers a new account and generates a password for it.
         """
         with open('data_passwords.txt', 'a') as archive:
-            archive.write(f'{cryptography.encrypt(f'{self.username:<30}{self.login_place:^20}{self.password:>20}')}\n')
+            data = f"{self.username:<30}{self.login_place:^20}{self.password:>20}"
+            archive.write(cryptography.encrypt(data) + "\n")
