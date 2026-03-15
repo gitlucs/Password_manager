@@ -8,6 +8,7 @@ from class_and_functions import show_logins
 from class_and_functions import security_check
 from class_and_functions import init_cryptography
 from class_and_functions import Criptography
+from class_and_functions import transform_hash
 
 
 color = {'blue':'\033[1;34m',
@@ -47,7 +48,7 @@ try:
             sleep(1)
         print('')
         archive.write(cryptography.encrypt(f"{name}") + "\n")
-        archive.write(cryptography.encrypt(f"{key_access}") + "\n")
+        archive.write(f"{transform_hash(key_access)}" + "\n")
         archive.write(cryptography.encrypt('-' * 70) + "\n")
         archive.write(cryptography.encrypt(f"{'Username':<30}{'Account source':^20}{'password':>20}") + "\n")
         
@@ -64,7 +65,7 @@ except FileExistsError:
 with open('data_passwords.txt', 'r') as archive:
     lines = archive.readlines()
     name = cryptography.decrypt(lines[0].strip()).strip()
-    key_access = cryptography.decrypt(lines[1].strip()).strip()
+    key_access = lines[1].strip()
 
 while True:
     menu()

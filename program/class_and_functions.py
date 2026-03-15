@@ -1,5 +1,6 @@
 import random
 from cryptography.fernet import Fernet
+import hashlib
 def line():
     """
     Displays a separator line.
@@ -61,7 +62,7 @@ def security_check(key_access, color):
     Checks whether the user knows the access key before allowing access to passwords.
     """
     key = input('Enter your access key: ').strip()
-    if key == key_access:
+    if transform_hash(key) == key_access:
         return True
     else:
         print(f'{color}WRONG KEY!!! The program will now close.')
@@ -75,6 +76,10 @@ def init_cryptography():
             cryptography.define_key()
     except:
         cryptography.remember_key()
+
+def transform_hash(data):
+    data = hashlib.sha224(data.encode())
+    return data.hexdigest()
     
 
 class Criptography:
