@@ -1,4 +1,5 @@
 import random
+from cryptography.fernet import Fernet
 def line():
     """
     Displays a separator line.
@@ -25,7 +26,7 @@ def show_logins():
         lines = archive.readlines()
         line()
         for c in range(2, len(lines)):
-            print(lines[c])
+            print(cryptography.decrypt(lines[c]))
         line()
 
 def search_password():
@@ -38,7 +39,7 @@ def search_password():
         find = ''
         line()
         for c in range(3, len(lines)):
-            user_password = lines[c].split()
+            user_password = cryptography.decrypt(lines[c].split())
             if user_password[1] == account_source:
                 find = user_password
                 print(f"This account uses the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m")
@@ -64,6 +65,64 @@ def security_check(key_access, color):
     else:
         print(f'{color}WRONG KEY!!! The program will now close.')
         return False
+
+def init_cryptography():
+    global cryptography
+    cryptography = Criptography()
+    try:
+        with open("secret.key", "x") as key_file:
+            cryptography.define_key()
+    except:
+        cryptography.remember_key()
+    
+
+class Criptography:
+    def __init__(self):
+        # attributes
+        self.key_crypto = None
+
+    # methods
+    def define_key(self):
+        """
+        Generate the master key to encrypt and decrypt risks informations
+        """
+        self.key_crypto = Fernet.generate_key()
+        with open("secret.key", "wb") as key_file:
+            key_file.write(self.key_crypto)
+
+    def remember_key(self):
+        """
+        Remember the key and input on the class attribute
+        """
+        with open("secret.key", "r") as key_file:
+            self.key_crypto = key_file.readline().strip()
+
+    def encrypt(self, data):
+        """
+        encrypt and write all the user's data informed
+        """
+        f = Fernet(self.key_crypto)
+        encrypted_info = None
+        if data == list():
+            for c in data:
+                encrypted_info += f.encrypt(c.encode('utf-8'))
+        else:
+            encrypted_info = f.encrypt(data.encode('utf-8'))
+        return encrypted_info
+
+    def decrypt(self, data):
+        """
+        decrypt and return the selected data for the user
+        """
+        f = Fernet(self.key_crypto)
+        decrypted_info = None
+        if data is list():
+            for c in data:
+                decrypted_info += f.decrypt(c.encode('utf-8'))
+        else:
+            decrypted_info = f.decrypt(data.encode('utf-8'))
+        return decrypted_info
+
 class User:
     def __init__(self, name, login_place):
         # attributes
@@ -77,4 +136,4 @@ class User:
         Registers a new account and generates a password for it.
         """
         with open('data_passwords.txt', 'a') as archive:
-            archive.write(f'{self.username:<30}{self.login_place:^20}{self.password:>20}\n')
+            archive.write(f'{cryptography.encrypt(f'{self.username:<30}{self.login_place:^20}{self.password:>20}')}\n')

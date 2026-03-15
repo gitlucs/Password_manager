@@ -6,6 +6,8 @@ from class_and_functions import generate_password
 from class_and_functions import search_password
 from class_and_functions import show_logins
 from class_and_functions import security_check
+from class_and_functions import init_cryptography
+from class_and_functions import Criptography
 
 
 color = {'blue':'\033[1;34m',
@@ -14,6 +16,14 @@ color = {'blue':'\033[1;34m',
          'none':'\033[m'}
 
 op = 0
+
+init_cryptography()
+cryptography = Criptography()
+try:
+    with open("secret.key", "x") as key_file:
+        cryptography.define_key()
+except:
+    cryptography.remember_key()
 
 #search if is a new login or not
 try:
@@ -37,23 +47,22 @@ try:
             print(c, end = ' ', flush = True)
             sleep(1)
         print('')
-        archive.write(f' {name:<15}{key_access}\n')
-        archive.write(f'{'-' * 70}\n')
-        archive.write(f'{'Username':<30}{'Account source':^20}{'password':>20}\n')
+        archive.write(f'{cryptography.encrypt(f'{name:<15}{key_access})')}\n')
+        archive.write(f'{cryptography.encrypt(f'{'-' * 70}')}\n')
+        archive.write(f'{cryptography.encrypt(f'{'Username':<30}{'Account source':^20}{'password':>20}')}\n')
         
     
 except FileExistsError:
     with open('data_passwords.txt', 'r') as archive:
         line()
-        print(f'Helloo {color['blue']}{archive.readline().split()[0]}{color['none']}, Welcome back!')
+        print(f'Helloo {color['blue']}{cryptography.decrypt(archive.archive.readlines()[0])}{color['none']}, Welcome back!')
         pass
 
 # main program
 
 with open('data_passwords.txt', 'r') as archive:
-    list_principal = archive.readline().split()
-    name = list_principal[0]
-    key_access = list_principal[1]
+    name = cryptography.decrypt(archive.readlines()[0])
+    key_access = cryptography.decrypt(archive.readlines()[1])
 
 while True:
     menu()
