@@ -1,18 +1,8 @@
 {
     "user_data": {
         "username": "Lucas",
-        "master_key": "291dd0708dd3b93db370a069463ae5bc36cc27aa116a93059a980778"
+        "salt": "ad78eef4839791812776f35bba0bb924",
+        "master_key": "cd2a5019dbe95af7c0170149e8f3115fba7f1b5d7bd30fccd45d9f9a7af6d68a"
     },
-    "accounts": [
-        {
-            "username": "Lucagabroel",
-            "place": "spotfy",
-            "password": "gAAAAABpuFMXLOqBhWn7eOOv81VuGCm4KrMp-EjexKOzsZgD-G9wOVQRd9kE2t9rvnsRuialqEN7R8aMFbcqIsFJ_lMXQ7AfNQ=="
-        },
-        {
-            "username": "jubirildo",
-            "place": "roblox",
-            "password": "gAAAAABpuFTh1uul4cpE53Q8P6KfB6hZ0DkepcHjQyGBAFAkrQCDEq4V4s55XZmDsjkRmWwFiGV4UvW4M2WTkCooUapim2-reg=="
-        }
-    ]
+    "accounts": []
 }

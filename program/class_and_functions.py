@@ -6,13 +6,8 @@ from crypto import transform_hash
 data_base = "database.json"
 
 def init_cryptography():
-    global cryptography
+    
     cryptography = Criptography()
-    try:
-        with open("secret.key", "x") as key_file:
-            cryptography.define_key()
-    except FileExistsError:
-        cryptography.remember_key()
     return cryptography
 
 def line():
@@ -34,7 +29,7 @@ def menu():
     print("6 - Finish program")
     line()
 
-def show_logins():
+def show_logins(cryptography):
     """
     Displays all accounts created by the user,
     including the username, password, and platform.
@@ -46,7 +41,7 @@ def show_logins():
         print(f'{account["username"]:<30}{account["place"]:^20}{cryptography.decrypt(account["password"]):^30}')
     line()
 
-def search_password():
+def search_password(cryptography):
     """
     Searches for a specific account and displays the username and password.
     """
@@ -57,25 +52,25 @@ def search_password():
     for account in data["accounts"]:
         if account["place"] == account_source:
             find += 1
-            print(f"This account uses the username: \033[34m{account["username"]}\033[m and the password: \033[32m{cryptography.decrypt(account['password'].strip())}\033[m")
+            print(f"This account uses the username: \033[34m{account['username']}\033[m and the password: \033[32m{cryptography.decrypt(account['password'].strip())}\033[m")
     if find == 0:
         print("\033[31mAccount not found.\033[m") 
-        line()
+    line()
 
 def create_database(name_archive):
     """
     creates a file which will have all the contents of user accounts and access
     """
-    
     with open(name_archive, "x") as archive:
         data = {
                 "user_data": {
                                 "username": "",
+                                "salt": "",
                                 "master_key": ""
                                                     },
                 "accounts": []
                 }
-        json.dump(data, archive)
+        json.dump(data, archive, indent= 4)
         
 
 def read_data(name_archive):
@@ -83,7 +78,11 @@ def read_data(name_archive):
     read the data of archive
     """
     with open(name_archive, 'r') as archive:
-        return json.load(archive)
+        try:
+            return json.load(archive)
+        except json.decoder.JSONDecodeError:
+            print('\033[31mERROR! Corrupted JSON file\033[m')
+            
 
 def save_data(name_archive, data):
     """
@@ -93,22 +92,20 @@ def save_data(name_archive, data):
         json.dump(data, archive, indent = 4)
 
 
-
-
-def generate_password():
+def generate_password(len = 12):
         """
         Generates a secure password for the user.
         """
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
-        password = ''.join(secrets.choice(characters) for i in range(12))
+        password = ''.join(secrets.choice(characters) for i in range(len))
         return password
 
-def security_check(key_access, color):
+def security_check(key_access, color, salt):
     """
     Checks whether the user knows the access key before allowing access to passwords.
     """
     key = input('Enter your access key: ').strip()
-    if transform_hash(key) == key_access:
+    if transform_hash(key.encode(), salt, hex = True) == key_access:
         return True
     else:
         print(f'{color}WRONG KEY!!! The program will now close.')
@@ -116,14 +113,14 @@ def security_check(key_access, color):
 
 
 class User:
-    def __init__(self, name, login_place):
+    def __init__(self, name, login_place, lenght):
         # attributes
         self.username = name
         self.login_place = login_place
-        self.password = generate_password()
+        self.password = generate_password(lenght)
     
     # methods
-    def new_login(self):
+    def new_login(self, cryptography):
         """
         Registers a new account and generates a password for it.
         """

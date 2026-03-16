@@ -182,3 +182,5 @@ cython_debug/
 database.json
 secret.key
 *.json
+*.json
+database.json
