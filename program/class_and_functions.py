@@ -3,6 +3,8 @@ import json
 from crypto import Criptography
 from crypto import transform_hash
 
+data_base = "database.json"
+
 def init_cryptography():
     global cryptography
     cryptography = Criptography()
@@ -35,33 +37,33 @@ def show_logins():
     Displays all accounts created by the user,
     including the username, password, and platform.
     """
-    with open('data_passwords.txt', 'r') as archive:
-        lines = archive.readlines()
-        line()
-        for c in range(3, len(lines)):
-            print(cryptography.decrypt(lines[c].strip()))
-        line()
+    data = read_data(data_base)
+    line()
+    for account in data["accounts"]:
+        print(f'{account["username"]:<30}{account["place"]:^20}{cryptography.decrypt(account["password"]):^30}')
+    line()
 
 def search_password():
     """
     Searches for a specific account and displays the username and password.
     """
-    with open('data_passwords.txt', 'r') as archive:
-        lines = archive.readlines()
-        account_source = str(input('Enter the account platform so I can search for it: ')).strip()
-        find = ''
-        line()
-        for c in range(3, len(lines)):
-            user_password = cryptography.decrypt(lines[c].strip())
-            user_password = user_password.split()
-            if user_password[1] == account_source:
-                find = user_password
-                print(f"This account uses the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m")
-        if find == '':
-            print("\033[31mAccount not found.\033[m") 
+    data = read_data(data_base)
+    account_source = str(input('Enter the account platform so I can search for it: ')).strip()
+    find = 0
+    line()
+    for account in data["accounts"]:
+        if account["place"] == account_source:
+            find += 1
+            print(f"This account uses the username: \033[34m{account["username"]}\033[m and the password: \033[32m{cryptography.decrypt(account['password'].strip())}\033[m")
+    if find == 0:
+        print("\033[31mAccount not found.\033[m") 
         line()
 
 def create_database(name_archive):
+    """
+    creates a file which will have all the contents of user accounts and access
+    """
+    
     with open(name_archive, "x") as archive:
         data = {
                 "user_data": {
@@ -70,16 +72,23 @@ def create_database(name_archive):
                                                     },
                 "accounts": []
                 }
+        new_login = {"username":"username","place": "place", "password": "password"}
+        data["accounts"].append(new_login)
         json.dump(data, archive, indent=4)
 
+def read_data(name_archive):
+    """
+    read the data of archive
+    """
+    with open(name_archive, 'r') as archive:
+        return json.load(archive)
 
-
-
-
-
-
-
-
+def save_data(name_archive, data):
+    """
+    save the new data of archive
+    """
+    with open(name_archive,'w') as archive:
+        json.dump(data, archive, indent = 4)
 
 
 
@@ -116,6 +125,7 @@ class User:
         """
         Registers a new account and generates a password for it.
         """
-        with open('data_passwords.txt', 'a') as archive:
-            data = f"{self.username:<30}{self.login_place:^20}{self.password:>20}"
-            archive.write(cryptography.encrypt(data) + "\n")
+        data = read_data(data_base)
+        new_login = {"username":self.username,"place": self.login_place, "password": cryptography.encrypt(self.password)}
+        data["accounts"].append(new_login) 
+        save_data(data_base, data)

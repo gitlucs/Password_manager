@@ -1,7 +1,18 @@
 {
     "user_data": {
-        "username": "",
-        "master_key": ""
+        "username": "Lucas",
+        "master_key": "3f8788f8af2db3eb499751226ea2e34fe7e6d01fb03313f9252f65cf"
     },
-    "accounts": []
+    "accounts": [
+        {
+            "username": "username",
+            "place": "place",
+            "password": "password"
+        },
+        {
+            "username": "lucasgabroel",
+            "place": "gmail",
+            "password": "gAAAAABpuBswbHj3CCTXS6F0YINiX0a_e7eOZhkK6zQ_uhUiUlNUOgWmm0rdYrHlDPeFbCLc8uZmqX2zHzGN6XgVwBsdohM4-Q=="
+        }
+    ]
 }

@@ -8,8 +8,9 @@ from class_and_functions import show_logins
 from class_and_functions import security_check
 from class_and_functions import create_database
 from class_and_functions import init_cryptography
-from crypto import Criptography
-
+from class_and_functions import read_data
+from class_and_functions import save_data
+from crypto import transform_hash
 
 color = {'blue':'\033[1;34m',
          'green':'\033[1;32m',
@@ -22,7 +23,7 @@ data_file = "database.json"
 cryptography = init_cryptography()
 
 try:
-    with open("secret.key", "x") as key_file:
+    with open(Key_file, "x") as key_file:
         cryptography.define_key()
 except:
     cryptography.remember_key()
@@ -49,22 +50,23 @@ try:
         print(c, end = ' ', flush = True)
         sleep(1)
     print('')
-    
-        
+    data = read_data(data_file)
+    data["user_data"]["username"] = name
+    data["user_data"]["master_key"] = transform_hash(key_access) 
+    save_data(data_file, data)
     
 except FileExistsError:
-    with open('data_passwords.txt', 'r') as archive:
-        line()
-        name = cryptography.decrypt(archive.readlines()[0].strip())
-        print(f"Helloo {color['blue']}{name.strip()}{color['none']}, Welcome back!")
-        pass
+    data = read_data(data_file)
+    line()
+    name = data["user_data"]["username"]
+    print(f"Helloo {color['blue']}{name.strip()}{color['none']}, Welcome back!")
+    pass
 
 # main program
 
-with open('data_passwords.txt', 'r') as archive:
-    lines = archive.readlines()
-    name = cryptography.decrypt(lines[0].strip()).strip()
-    key_access = lines[1].strip()
+data = read_data(data_file)
+name = data["user_data"]["username"].strip()
+key_access = data["user_data"]["master_key"]
 
 while True:
     menu()
@@ -91,7 +93,7 @@ while True:
         new_user = User(username, place)
         new_user.new_login()
         print(f'{color['green']}Account successfully registered.{color['none']}')
-        print(f'Here is the password for this account:: {color['blue']}{new_user.password}{color['none']}')
+        print(f'Here is the password for this account: {color['blue']}{new_user.password}{color['none']}')
         sleep(2)
     elif op == 3:
         line()
