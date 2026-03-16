@@ -6,9 +6,9 @@ from class_and_functions import generate_password
 from class_and_functions import search_password
 from class_and_functions import show_logins
 from class_and_functions import security_check
+from class_and_functions import create_database
 from class_and_functions import init_cryptography
-from class_and_functions import Criptography
-from class_and_functions import transform_hash
+from crypto import Criptography
 
 
 color = {'blue':'\033[1;34m',
@@ -16,9 +16,11 @@ color = {'blue':'\033[1;34m',
          'red':'\033[1;31m',
          'none':'\033[m'}
 
-op = 0
-init_cryptography()
-cryptography = Criptography()
+Key_file = "secret.key"
+data_file = "database.json"
+
+cryptography = init_cryptography()
+
 try:
     with open("secret.key", "x") as key_file:
         cryptography.define_key()
@@ -27,30 +29,27 @@ except:
 
 #search if is a new login or not
 try:
-    with open('data_passwords.txt', 'x') as archive:
-        key_access = generate_password()
-        line()
-        print('Welcome, new user! Thanks for using my program.')
-        while True:
+    create_database(data_file)
+    key_access = generate_password()
+    line()
+    print('Welcome, new user! Thanks for using my program.')
+    while True:
+        name = input(f'Please enter ONLY your first name: ')
+        if ' ' in name:
             name = input(f'Please enter ONLY your first name: ')
-            if ' ' in name:
-                name = input(f'Please enter ONLY your first name: ')
-            else:
-                break
-        line()
-        print(f'{color['green']}{key_access}{color['none']} This is your new access key to register and see your accounts passwords')
-        print("""Please save this key in a secure place and do not forget it,\n
-                because if you lose it you will lose access to all stored passwords.""")
-        line()
-        print('I will wait 10 seconds for you to do this:')
-        for c in range(1, 11):
-            print(c, end = ' ', flush = True)
-            sleep(1)
-        print('')
-        archive.write(cryptography.encrypt(f"{name}") + "\n")
-        archive.write(f"{transform_hash(key_access)}" + "\n")
-        archive.write(cryptography.encrypt('-' * 70) + "\n")
-        archive.write(cryptography.encrypt(f"{'Username':<30}{'Account source':^20}{'password':>20}") + "\n")
+        else:
+            break
+    line()
+    print(f'{color['green']}{key_access}{color['none']} This is your new access key to register and see your accounts passwords')
+    print("""Please save this key in a secure place and do not forget it,\n
+            because if you lose it you will lose access to all stored passwords.""")
+    line()
+    print('I will wait 10 seconds for you to do this:')
+    for c in range(1, 11):
+        print(c, end = ' ', flush = True)
+        sleep(1)
+    print('')
+    
         
     
 except FileExistsError:
