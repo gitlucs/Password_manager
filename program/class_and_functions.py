@@ -1,6 +1,15 @@
-import random
-from cryptography.fernet import Fernet
-import hashlib
+import secrets
+import json
+from crypto import Criptography
+from crypto import transform_hash
+
+data_base = "database.json"
+
+def init_cryptography():
+    
+    cryptography = Criptography()
+    return cryptography
+
 def line():
     """
     Displays a separator line.
@@ -15,127 +24,107 @@ def menu():
     print("1 - Access your passwords")
     print("2 - Create new passwords for new accounts")
     print("3 - Search for a specific password")
-    print("4 - Finish program")
+    print("4 - Delete account")
+    print("5 - recreate a password for an existing account")
+    print("6 - Finish program")
     line()
 
-def show_logins():
+def show_logins(cryptography):
     """
     Displays all accounts created by the user,
     including the username, password, and platform.
     """
-    with open('data_passwords.txt', 'r') as archive:
-        lines = archive.readlines()
-        line()
-        for c in range(3, len(lines)):
-            print(cryptography.decrypt(lines[c].strip()))
-        line()
+    data = read_data(data_base)
+    line()
+    print(f'{"username":<30}{"place":^20}{"password":^30}')
+    for account in data["accounts"]:
+        print(f'{account["username"]:<30}{account["place"]:^20}{cryptography.decrypt(account["password"]):^30}')
+    line()
 
-def search_password():
+def search_password(cryptography):
     """
     Searches for a specific account and displays the username and password.
     """
-    with open('data_passwords.txt', 'r') as archive:
-        lines = archive.readlines()
-        account_source = str(input('Enter the account platform so I can search for it: ')).strip()
-        find = ''
-        line()
-        for c in range(3, len(lines)):
-            user_password = cryptography.decrypt(lines[c].strip())
-            user_password = user_password.split()
-            if user_password[1] == account_source:
-                find = user_password
-                print(f"This account uses the username: \033[34m{find[0]}\033[m and the password: \033[32m{find[2]}\033[m")
-        if find == '':
-            print("\033[31mAccount not found.\033[m") 
-        line()
+    data = read_data(data_base)
+    account_source = str(input('Enter the account platform so I can search for it: ')).strip()
+    find = 0
+    line()
+    for account in data["accounts"]:
+        if account["place"] == account_source:
+            find += 1
+            print(f"This account uses the username: \033[34m{account['username']}\033[m and the password: \033[32m{cryptography.decrypt(account['password'].strip())}\033[m")
+    if find == 0:
+        print("\033[31mAccount not found.\033[m") 
+    line()
 
-def generate_password():
+def create_database(name_archive):
+    """
+    creates a file which will have all the contents of user accounts and access
+    """
+    with open(name_archive, "x") as archive:
+        data = {
+                "user_data": {
+                                "username": "",
+                                "salt": "",
+                                "master_key": ""
+                                                    },
+                "accounts": []
+                }
+        json.dump(data, archive, indent= 4)
+        
+
+def read_data(name_archive):
+    """
+    read the data of archive
+    """
+    with open(name_archive, 'r') as archive:
+        try:
+            return json.load(archive)
+        except json.decoder.JSONDecodeError:
+            print('\033[31mERROR! Corrupted JSON file\033[m')
+            
+
+def save_data(name_archive, data):
+    """
+    save the new data of archive
+    """
+    with open(name_archive,'w') as archive:
+        json.dump(data, archive, indent = 4)
+
+
+def generate_password(len = 12):
         """
         Generates a secure password for the user.
         """
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
-        password = ''.join(random.choice(characters) for i in range(12))
+        password = ''.join(secrets.choice(characters) for i in range(len))
         return password
 
-def security_check(key_access, color):
+def security_check(key_access, color, salt):
     """
     Checks whether the user knows the access key before allowing access to passwords.
     """
     key = input('Enter your access key: ').strip()
-    if transform_hash(key) == key_access:
+    if transform_hash(key.encode(), salt, hex = True) == key_access:
         return True
     else:
         print(f'{color}WRONG KEY!!! The program will now close.')
         return False
 
-def init_cryptography():
-    global cryptography
-    cryptography = Criptography()
-    try:
-        with open("secret.key", "x") as key_file:
-            cryptography.define_key()
-    except:
-        cryptography.remember_key()
-
-def transform_hash(data):
-    data = hashlib.sha224(data.encode())
-    return data.hexdigest()
-    
-
-class Criptography:
-    def __init__(self):
-        # attributes
-        self.key_crypto = None
-
-    # methods
-    def define_key(self):
-        """
-        Generate the master key to encrypt and decrypt risks informations
-        """
-        self.key_crypto = Fernet.generate_key()
-        with open("secret.key", "wb") as key_file:
-            key_file.write(self.key_crypto)
-
-    def remember_key(self):
-        """
-        Remember the key and input on the class attribute
-        """
-        with open("secret.key", "rb") as key_file:
-            self.key_crypto = key_file.readline().strip()
-
-    def encrypt(self, data):
-        """
-        encrypt and write all the user's data informed
-        """
-        f = Fernet(self.key_crypto)
-        if isinstance(data, list):
-            encrypted_info = []
-            for c in data:
-                encrypted_info.append(f.encrypt(c.encode()).decode())
-            return encrypted_info
-        else:
-            return f.encrypt(data.encode()).decode()
-
-    def decrypt(self, data):
-        """
-        decrypt and return the selected data for the user
-        """
-        f = Fernet(self.key_crypto)
-        decrypted_info = f.decrypt(data.encode()).decode()
-        return decrypted_info
 
 class User:
-    def __init__(self, name, login_place):
+    def __init__(self, name, login_place, lenght):
         # attributes
         self.username = name
         self.login_place = login_place
-        self.password = generate_password()
+        self.password = generate_password(lenght)
     
     # methods
-    def new_login(self):
+    def new_login(self, cryptography):
         """
         Registers a new account and generates a password for it.
         """
-        with open('data_passwords.txt', 'a') as archive:
-            data = f"{self.username:<30}{self.login_place:^20}{self.password:>20}"
-            archive.write(cryptography.encrypt(data) + "\n")
+        data = read_data(data_base)
+        new_login = {"username":self.username,"place": self.login_place, "password": cryptography.encrypt(self.password)}
+        data["accounts"].append(new_login) 
+        save_data(data_base, data)
