@@ -181,3 +181,4 @@ cython_debug/
 .cursorindexingignore
 database.json
 secret.key
+*.json

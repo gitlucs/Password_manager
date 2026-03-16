@@ -36,7 +36,7 @@ class Criptography:
         if isinstance(data, list):
             encrypted_info = []
             for c in data:
-                encrypted_info.append(f.encrypt(c.encode()).decode())
+                encrypted_info.append(f.encrypt(c.encode()).decode)
             return encrypted_info
         else:
             return f.encrypt(data.encode()).decode()
@@ -46,5 +46,5 @@ class Criptography:
         decrypt and return the selected data for the user
         """
         f = Fernet(self.key_crypto)
-        decrypted_info = f.decrypt(data.encode()).decode()
+        decrypted_info = f.decrypt(data).decode()
         return decrypted_info

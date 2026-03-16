@@ -1,4 +1,4 @@
-import random
+import secrets
 import json
 from crypto import Criptography
 from crypto import transform_hash
@@ -29,7 +29,9 @@ def menu():
     print("1 - Access your passwords")
     print("2 - Create new passwords for new accounts")
     print("3 - Search for a specific password")
-    print("4 - Finish program")
+    print("4 - Delete account")
+    print("5 - recreate a password for an existing account")
+    print("6 - Finish program")
     line()
 
 def show_logins():
@@ -39,6 +41,7 @@ def show_logins():
     """
     data = read_data(data_base)
     line()
+    print(f'{"username":<30}{"place":^20}{"password":^30}')
     for account in data["accounts"]:
         print(f'{account["username"]:<30}{account["place"]:^20}{cryptography.decrypt(account["password"]):^30}')
     line()
@@ -72,9 +75,8 @@ def create_database(name_archive):
                                                     },
                 "accounts": []
                 }
-        new_login = {"username":"username","place": "place", "password": "password"}
-        data["accounts"].append(new_login)
-        json.dump(data, archive, indent=4)
+        json.dump(data, archive)
+        
 
 def read_data(name_archive):
     """
@@ -98,7 +100,7 @@ def generate_password():
         Generates a secure password for the user.
         """
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
-        password = ''.join(random.choice(characters) for i in range(12))
+        password = ''.join(secrets.choice(characters) for i in range(12))
         return password
 
 def security_check(key_access, color):

@@ -72,11 +72,12 @@ while True:
     menu()
     op = str(input('Write your choice: '))
     while True:
-        if op not in '1234':
-            op = str(input(f'{color['red']}ERROR! THIS IS NOT AN OPTION{color['none']}, please choice a valid option [1,2,3,4]: '))
+        if op not in '123456':
+            op = str(input(f'{color['red']}ERROR! THIS IS NOT AN OPTION{color['none']}, please choice a valid option [1,2,3,4,5,6]: '))
         else:
             break        
     op = int(op)
+
     if op == 1:
         line()
         if security_check(key_access, color['red']) == False:
@@ -101,6 +102,44 @@ while True:
             break
         search_password()
         sleep(2)
+
     elif op == 4:
+        if security_check(key_access, color['red']) == False:
+            break
+        data = read_data(data_file)
+        delets = 0
+        account_del = input('Which account do you want to del? [Enter platform] ')
+        for c, b in enumerate(data["accounts"]):
+            if account_del == b["place"]:
+                data["accounts"].pop(c)
+                delets +=1
+        save_data(data_file, data)
+        if delets == 0:
+            print(f"{color['red']}Account not found")
+        else:
+            print(f"{color['green']}Account succesfully deleted!{color['none']}")
+        sleep(2)
+
+    elif op == 5:
+        if security_check(key_access, color['red']) == False:
+            break
+        data = read_data(data_file)
+        account_renew = str(input("Which account do you want to recreate password? [Enter platform] ").strip())
+        find = 0
+        for c, b in enumerate(data["accounts"]):
+            if account_renew == b["place"]:
+                new_password = generate_password()
+                print(f"{color['green']}{new_password}{color['none']} That will be you new password for the {color['blue']}{b["place"]}{color['none']} account")
+                new_password = cryptography.encrypt(new_password)
+                data["accounts"].pop(c)
+                b["password"] = new_password
+                data["accounts"].insert(c, b)
+                save_data(data_file, data)
+                find += 1
+        if find == 0:
+            print(f"{color['red']}Account not found")
+        sleep(2)
+        
+    elif op == 6:
         print('Goodbye!!!')
         break
