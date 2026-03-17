@@ -92,12 +92,12 @@ def save_data(name_archive, data):
         json.dump(data, archive, indent = 4)
 
 
-def generate_password(len = 12):
+def generate_password(lenght = 12):
         """
         Generates a secure password for the user.
         """
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()'
-        password = ''.join(secrets.choice(characters) for i in range(len))
+        password = ''.join(secrets.choice(characters) for i in range(lenght))
         return password
 
 def security_check(key_access, color, salt):
