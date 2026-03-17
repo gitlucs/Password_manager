@@ -179,9 +179,5 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
-database.json
-secret.key
 *.json
-*.json
-database.json
-database.json
+datase.json
