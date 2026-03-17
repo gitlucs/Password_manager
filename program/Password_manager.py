@@ -102,8 +102,6 @@ while True:
 
     elif op == 3:
         line()
-        if security_check(key_access, color['red']) == False:
-            break
         search_password(cryptography)
         sleep(2)
 
